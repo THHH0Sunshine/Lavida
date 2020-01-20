@@ -1,4 +1,4 @@
-# lavida
+# Lavida Character Manager
 
 ## Project setup
 ```
