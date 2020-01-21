@@ -30,7 +30,7 @@
         </div>
         <div class="multi">
           <attribute class="item" name="教育 EDU" v-model="aEDU"></attribute>
-          <attribute class="item" name="移动力 MOV" v-model="aMOV"></attribute>
+          <attribute class="item" name="移动 MOV" v-model="aMOV"></attribute>
         </div>
       </el-card>
     </div>

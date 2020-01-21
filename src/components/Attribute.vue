@@ -3,20 +3,23 @@
     <el-tag class="tag">{{name}}</el-tag>
     <el-popover trigger="hover">
       <el-input class="hover-input" v-model="input" type="number" :min="1"></el-input>
-      <el-button class="hover-button" size="mini" icon="el-icon-check" circle @click="plus(-input)"></el-button>
+      <el-button class="hover-button" size="mini" icon="el-icon-minus" circle @click="plus(-input)"></el-button>
       <el-button slot="reference" size="mini" icon="el-icon-minus" circle @click="plus(-1)"></el-button>
     </el-popover>
     <b class="value" :style="{color:valueColor}">{{value}}</b>
     <el-popover trigger="hover">
       <el-input class="hover-input" v-model="input" type="number" :min="1"></el-input>
-      <el-button class="hover-button" size="mini" icon="el-icon-check" circle @click="plus(input*1)"></el-button>
+      <el-button class="hover-button" size="mini" icon="el-icon-plus" circle @click="plus(input*1)"></el-button>
       <el-button slot="reference" size="mini" icon="el-icon-plus" circle @click="plus(1)"></el-button>
     </el-popover>
     <el-popover trigger="hover">
-      <el-button size="mini">困难</el-button>
-      <el-button slot="reference" class="check-button" icon="el-icon-s-promotion" circle @click="dialog=true"></el-button>
+      <div class="check-hover">
+        <el-button size="mini" @click="checkOpen(2)">困难</el-button>
+        <el-button size="mini" @click="checkOpen(5)">极难</el-button>
+      </div>
+      <el-button slot="reference" class="check-button" icon="el-icon-s-promotion" circle @click="checkOpen(1)"></el-button>
     </el-popover>
-    <el-dialog :visible.sync="dialog" width="30%" @open="dice=true" @closed="dice=false;diceResult=null">
+    <el-dialog :visible.sync="dialog" width="30%" @closed="checkClose">
       <div class="check">
         <dice v-if="dice" :min="1" :max="100" @result="diceResult=$event"></dice>
         <b v-if="diceResult!=null" class="check-text" :style="{color:diceResultColor}">{{diceResultText}}</b>
@@ -41,7 +44,8 @@ export default {
       input: '1',
       dialog: false,
       dice: false,
-      diceResult: null
+      diceResult: null,
+      difficulty: 1
     }
   },
   computed: {
@@ -58,7 +62,7 @@ export default {
       if (this.diceResult == null) {
         return ''
       }
-      if (this.diceResult <= this.value) {
+      if (this.diceResult <= this.value / this.difficulty) {
         return this.diceResult <= 1 ? '大成功' : '成功'
       }
       return this.diceResult >= 96 ? '大失败' : '失败'
@@ -70,6 +74,15 @@ export default {
   methods: {
     plus(num) {
       this.$emit('input', this.value * 1 + num)
+    },
+    checkOpen(difficulty) {
+      this.dialog = true
+      this.dice = true
+      this.difficulty = difficulty
+    },
+    checkClose() {
+      this.dice = false
+      this.diceResult = null
     }
   }
 }
@@ -90,6 +103,11 @@ export default {
 
 .hover-button {
   margin-left: 15px;
+}
+
+.check-hover {
+  display: flex;
+  justify-content: space-around;
 }
 
 .check-button {

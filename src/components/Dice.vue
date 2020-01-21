@@ -5,6 +5,12 @@
       <div class="number" :style="diceLowerStyle">{{lower}}</div>
     </div>
     <el-button class="button" @click="stop=true">STOP</el-button>
+    <div v-if="basic==null" class="bonus">
+      奖励骰子 <el-switch v-model="bonus"></el-switch>
+    </div>
+    <div v-else class="bonus">
+      基础点数：{{basic}}
+    </div>
   </div>
 </template>
 
@@ -21,7 +27,9 @@ export default {
       stop: false,
       timer: null,
       interval: 1,
-      position: 0
+      position: 0,
+      bonus: false,
+      basic: null
     }
   },
   computed: {
@@ -46,13 +54,27 @@ export default {
           this.timer = setInterval(() => this.nextFrame(), this.interval += 1)
         } else if (!this.position) {
           clearInterval(this.timer)
-          this.$emit('result', this.lower)
+          if (this.bonus) {
+            if (this.basic == null) {
+              this.basic = this.lower
+              this.upper = this.lower = 0
+              this.stop = false
+              this.interval = 1
+              this.timer = setInterval(() => this.nextFrame(), this.interval)
+            } else {
+              this.$emit('result', this.basic - this.lower)
+            }
+          } else {
+            this.$emit('result', this.lower)
+          }
           return
         }
       }
       if ((this.position += 4) >= 100) {
         this.position = 0
-        let next = Math.floor(Math.random() * this.len) + this.min
+        let len = this.basic == null ? this.len : 6
+        let min = this.basic == null ? this.min : 1
+        let next = Math.floor(Math.random() * len) + min
         this.lower = this.upper
         this.upper = next
       }
@@ -87,7 +109,9 @@ export default {
   text-align: center;
 }
 
-.button {
+.button,
+.bonus {
   margin-top: 10px;
+  font-size: 13px;
 }
 </style>
