@@ -1,18 +1,8 @@
 <template>
-  <el-card>
-    <el-tag class="tag">{{name}}</el-tag>
-    <el-popover trigger="hover">
-      <el-input class="hover-input" v-model="input" type="number" :min="1"></el-input>
-      <el-button class="hover-button" size="mini" icon="el-icon-minus" circle @click="plus(-input)"></el-button>
-      <el-button slot="reference" size="mini" icon="el-icon-minus" circle @click="plus(-1)"></el-button>
-    </el-popover>
-    <b class="value" :style="{color:valueColor}">{{value}}</b>
-    <el-popover trigger="hover">
-      <el-input class="hover-input" v-model="input" type="number" :min="1"></el-input>
-      <el-button class="hover-button" size="mini" icon="el-icon-plus" circle @click="plus(input*1)"></el-button>
-      <el-button slot="reference" size="mini" icon="el-icon-plus" circle @click="plus(1)"></el-button>
-    </el-popover>
-    <el-popover trigger="hover">
+  <div class="wrapper">
+    <b class="tag">{{name}}</b>
+    <b class="value" :style="{color:valueColor}">{{value==null?'--':value}}</b>
+    <el-popover v-if="value!=null" trigger="hover">
       <div class="check-hover">
         <el-button size="mini" @click="checkOpen(2)">困难</el-button>
         <el-button size="mini" @click="checkOpen(5)">极难</el-button>
@@ -25,7 +15,7 @@
         <b v-if="diceResult!=null" class="check-text" :style="{color:diceResultColor}">{{diceResultText}}</b>
       </div>
     </el-dialog>
-  </el-card>
+  </div>
 </template>
 
 <script>
@@ -41,7 +31,6 @@ export default {
   },
   data() {
     return {
-      input: '1',
       dialog: false,
       dice: false,
       diceResult: null,
@@ -72,9 +61,6 @@ export default {
     }
   },
   methods: {
-    plus(num) {
-      this.$emit('input', this.value * 1 + num)
-    },
     checkOpen(difficulty) {
       this.dialog = true
       this.dice = true
@@ -89,20 +75,21 @@ export default {
 </script>
 
 <style scoped>
+.wrapper {
+  display: flex;
+  align-items: center;
+}
+
 .tag {
+  border: 1px solid gray;
+  border-left: none;
+  border-right: none;
+  padding: 4px;
   margin-right: 10px;
 }
 
 .value {
   padding: 0 10px;
-}
-
-.hover-input {
-  width: 105px;
-}
-
-.hover-button {
-  margin-left: 15px;
 }
 
 .check-hover {
