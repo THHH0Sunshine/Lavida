@@ -19,8 +19,12 @@ export default {
   data() {
     return {
       editing: false,
-      input: null,
-      canClose: true
+      input: null
+    }
+  },
+  watch: {
+    value(v) {
+      this.editing = v == null
     }
   },
   computed: {
@@ -38,11 +42,13 @@ export default {
       return this.input != null &&
         (this.input.length == null || this.input.length > 0) &&
         (this.number == null || (this.number.min == null || this.input >= this.number.min) && (this.number.max == null || this.input <= this.number.max))
+    },
+    canClose() {
+      return this.value != null
     }
   },
   mounted() {
     if (this.value == null) {
-      this.canClose = false
       this.edit()
     }
   },
@@ -52,7 +58,6 @@ export default {
       this.input = this.value
     },
     save() {
-      this.canClose = true
       this.editing = false
       this.$emit('input', this.input)
     },

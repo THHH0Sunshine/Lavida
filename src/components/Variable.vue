@@ -33,6 +33,9 @@ export default {
       return !this.constant && this.value != null
     },
     valueColor() {
+      if (this.value == null) {
+        return 'red'
+      }
       if (this.max == null) {
         if (this.value <= 0) {
           return 'red'

@@ -39,7 +39,7 @@ export default {
   },
   computed: {
     valueColor() {
-      if (this.value < 30) {
+      if (this.value == null || this.value < 30) {
         return 'red'
       }
       if (this.value < 70) {
