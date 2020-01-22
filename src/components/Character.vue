@@ -168,7 +168,7 @@ export default {
 }
 
 .basic {
-  width: 500px;
+  width: 450px;
 }
 
 .attributes {
