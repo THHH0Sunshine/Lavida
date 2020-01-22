@@ -4,14 +4,14 @@
     <el-popover v-if="editable" trigger="hover">
       <el-input class="hover-input" v-model="input" type="number" :min="1"></el-input>
       <el-button class="hover-button" size="mini" icon="el-icon-minus" circle @click="plus(-input)"></el-button>
-      <el-button class="hover-button" size="mini" icon="el-icon-s-promotion" circle @click="diceOpen(input*1,true)"></el-button>
+      <el-button class="hover-button" size="mini" icon="icon-dice" circle @click="diceOpen(input*1,true)"></el-button>
       <el-button slot="reference" size="mini" icon="el-icon-minus" circle @click="plus(-1)"></el-button>
     </el-popover>
     <b class="value" :style="{color:valueColor}">{{value==null?'--':value}}{{max==null?'':'/'+max}}</b>
     <el-popover v-if="editable" trigger="hover">
       <el-input class="hover-input" v-model="input" type="number" :min="1"></el-input>
       <el-button class="hover-button" size="mini" icon="el-icon-plus" circle @click="plus(input*1)"></el-button>
-      <el-button class="hover-button" size="mini" icon="el-icon-s-promotion" circle @click="diceOpen(input*1,false)"></el-button>
+      <el-button class="hover-button" size="mini" icon="icon-dice" circle @click="diceOpen(input*1,false)"></el-button>
       <el-button slot="reference" size="mini" icon="el-icon-plus" circle @click="plus(1)"></el-button>
     </el-popover>
     <el-dialog :visible.sync="dialog" width="30%" @closed="diceClose">

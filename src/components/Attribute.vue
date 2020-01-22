@@ -7,7 +7,7 @@
         <el-button size="mini" @click="checkOpen(2)">困难</el-button>
         <el-button size="mini" @click="checkOpen(5)">极难</el-button>
       </div>
-      <el-button slot="reference" class="check-button" icon="el-icon-s-promotion" circle @click="checkOpen(1)"></el-button>
+      <el-button slot="reference" class="check-button" icon="icon-dice" circle @click="checkOpen(1)"></el-button>
     </el-popover>
     <el-dialog :visible.sync="dialog" width="30%" @closed="checkClose">
       <div class="check">
@@ -57,7 +57,7 @@ export default {
       return this.diceResult >= 96 ? '大失败' : '失败'
     },
     diceResultColor() {
-      return this.diceResult <= this.value ? 'green' : 'red'
+      return this.diceResult <= this.value / this.difficulty ? 'green' : 'red'
     }
   },
   methods: {

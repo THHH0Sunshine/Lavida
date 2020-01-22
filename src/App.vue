@@ -14,3 +14,18 @@ export default {
   }
 }
 </script>
+
+<style>
+.icon-dice {
+  display: inline-block;
+  width: 14px;
+  height: 14px;
+  background-image: url(./assets/dice.png);
+  background-size: 14px 14px;
+}
+
+.icon-dice::before {
+  content: '_';
+  color: transparent;
+}
+</style>
