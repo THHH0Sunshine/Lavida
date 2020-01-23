@@ -18,26 +18,7 @@
           <span class="item">故乡：<editable v-model="attributes.hometown"></editable></span>
         </div>
       </el-card>
-      <el-card class="attributes">
-        <div slot="header">
-          <b>角色属性</b>
-          <el-button class="header-button" type="text">快速开局</el-button>
-        </div>
-        <div class="multi">
-          <el-card class="item"><attribute name="力量 STR" :value="attributes.STR"></attribute></el-card>
-          <el-card class="item"><attribute name="体质 CON" :value="attributes.CON"></attribute></el-card>
-          <el-card class="item"><attribute name="体型 SIZ" :value="attributes.SIZ"></attribute></el-card>
-          <el-card class="item"><attribute name="敏捷 DEX" :value="attributes.DEX"></attribute></el-card>
-          <el-card class="item"><attribute name="外貌 APP" :value="attributes.APP"></attribute></el-card>
-          <el-card class="item"><attribute name="智力 INT" :value="attributes.INT"></attribute></el-card>
-          <el-card class="item"><attribute name="意志 POW" :value="attributes.POW"></attribute></el-card>
-          <el-card class="item"><attribute name="教育 EDU" :value="attributes.EDU"></attribute></el-card>
-          <el-card class="item"><attribute name="移动 MOV" :value="attributes.MOV"></attribute></el-card>
-          <el-card class="item"><variable name="幸运 Luck" :value="attributes.Luck" constant></variable></el-card>
-          <el-card class="item"><variable name="信用评级" :value="attributes.Money" constant></variable></el-card>
-          <el-card class="item"><attribute name="闪避" :value="attributes.ShanBi"></attribute></el-card>
-        </div>
-      </el-card>
+      <attributes class="attributes" v-model="attributes"></attributes>
     </div>
     <div class="center">
       <el-card class="variables">
@@ -45,7 +26,7 @@
         <div class="multi">
           <el-card class="item"><variable name="体力 HP" v-model="attributes.HP"></variable></el-card>
           <el-card class="item"><variable name="理智 SAN" v-model="attributes.SAN"></variable></el-card>
-          <el-card class="item"><variable name="魔法 MP" v-model="attributes.MP" :max="10"></variable></el-card>
+          <el-card class="item"><variable name="魔法 MP" v-model="attributes.MP" :max="attributes.MaxMP"></variable></el-card>
         </div>
       </el-card>
       <el-card class="skills">
@@ -62,13 +43,15 @@
 </template>
 
 <script>
-import Editable from './Editable'
-import Attribute from './Attribute'
-import Variable from './Variable'
+import Editable from '../Editable'
+import Attributes from './Attributes'
+import Attribute from '../Attribute'
+import Variable from '../Variable'
 
 export default {
   components: {
     Editable,
+    Attributes,
     Attribute,
     Variable
   },
@@ -94,9 +77,9 @@ export default {
         MOV: 100,
         Luck: 35,
         Money: 35,
-        ShanBi: 100,
         HP: 10,
         SAN: 10,
+        MaxMP: 10,
         MP: 10
       },
       skills: [

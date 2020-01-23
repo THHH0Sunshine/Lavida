@@ -2,7 +2,7 @@
   <div class="wrapper">
     <div class="dice">
       <div class="number" :style="diceUpperStyle">{{upper}}</div>
-      <div class="number" :style="diceLowerStyle">{{lower}}</div>
+      <div class="number" :class="{emphasized}" :style="diceLowerStyle">{{lower}}</div>
     </div>
     <el-button class="button" @click="stop=true">STOP</el-button>
     <div v-if="basic==null" class="bonus">
@@ -28,6 +28,7 @@ export default {
       timer: null,
       interval: 1,
       position: 0,
+      emphasized: false,
       bonus: false,
       basic: null
     }
@@ -46,6 +47,11 @@ export default {
   mounted() {
     this.timer = setInterval(() => this.nextFrame(), this.interval)
   },
+  beforeDestroy() {
+    if (this.timer != null) {
+      clearInterval(this.timer)
+    }
+  },
   methods: {
     nextFrame() {
       if (this.stop) {
@@ -54,18 +60,21 @@ export default {
           this.timer = setInterval(() => this.nextFrame(), this.interval += 1)
         } else if (!this.position) {
           clearInterval(this.timer)
+          this.timer = null
           if (this.bonus) {
             if (this.basic == null) {
-              this.basic = this.lower
-              this.upper = this.lower = 0
-              this.stop = false
-              this.interval = 1
-              this.timer = setInterval(() => this.nextFrame(), this.interval)
+              this.emphasize(() => {
+                this.basic = this.lower
+                this.upper = this.lower = 0
+                this.stop = false
+                this.interval = 1
+                this.timer = setInterval(() => this.nextFrame(), this.interval)
+              })
             } else {
-              this.$emit('result', this.basic - this.lower)
+              this.emphasize(() => this.$emit('result', this.basic - this.lower))
             }
           } else {
-            this.$emit('result', this.lower)
+            this.emphasize(() => this.$emit('result', this.lower))
           }
           return
         }
@@ -78,6 +87,15 @@ export default {
         this.lower = this.upper
         this.upper = next
       }
+    },
+    emphasize(then) {
+      this.emphasized = true
+      this.timer = setInterval(() => {
+        clearInterval(this.timer)
+        this.timer = null
+        this.emphasized = false
+        then()
+      }, 1000)
     }
   }
 }
@@ -107,6 +125,11 @@ export default {
   font-size: 50px;
   line-height: 100px;
   text-align: center;
+  transition: transform 0.2s;
+}
+
+.emphasized {
+  transform: scale(2, 2);
 }
 
 .button,
