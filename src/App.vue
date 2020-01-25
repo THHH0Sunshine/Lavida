@@ -20,7 +20,7 @@ export default {
   display: inline-block;
   width: 14px;
   height: 14px;
-  background-image: url(./assets/dice.png);
+  background-image: url(./assets/dice.svg);
   background-size: 14px 14px;
 }
 
