@@ -3,7 +3,7 @@
     <div slot="header">
       <b>角色属性</b>
       <el-button class="header-button" type="text" @click="dialog=dice=true">快速开局</el-button>
-      <el-dialog :visible.sync="dialog" width="60%" @closed="dice=false">
+      <el-dialog :visible.sync="dialog" width="80%" @closed="dice=false">
         <div class="dialog-wrapper">
           <div class="dice-wrapper">
             <dice v-if="dice" :min="1" :max="6" @result="diceFinish"></dice>

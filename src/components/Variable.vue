@@ -14,10 +14,10 @@
       <el-button class="hover-button" size="mini" icon="icon-dice" circle @click="diceOpen(input*1,false)"></el-button>
       <el-button slot="reference" size="mini" icon="el-icon-plus" circle @click="plus(1)"></el-button>
     </el-popover>
-    <el-dialog :visible.sync="dialog" width="30%" @closed="diceClose">
+    <el-dialog :visible.sync="dialog" width="300px" @closed="diceClose">
       <div class="check">
         <dice v-if="dice" :min="1" :max="dice.max" @result="diceFinish"></dice>
-        <b v-if="diceResult!=null" class="check-text" :style="{color:diceResultColor}">{{diceResult.old}} -> {{value}}</b>
+        <b v-if="diceResult!=null" class="check-text" :style="{color:diceResultColor}">{{diceResult.old}} → {{value}}</b>
       </div>
     </el-dialog>
   </div>

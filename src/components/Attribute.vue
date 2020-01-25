@@ -9,7 +9,7 @@
       </div>
       <el-button slot="reference" class="check-button" icon="icon-dice" circle @click="checkOpen(1)"></el-button>
     </el-popover>
-    <el-dialog :visible.sync="dialog" width="30%" @closed="checkClose">
+    <el-dialog :visible.sync="dialog" width="300px" @closed="checkClose">
       <div class="check">
         <dice v-if="dice" :min="1" :max="100" @result="diceResult=$event"></dice>
         <b v-if="diceResult!=null" class="check-text" :style="{color:diceResultColor}">{{diceResultText}}</b>

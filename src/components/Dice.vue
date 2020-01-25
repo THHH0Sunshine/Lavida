@@ -95,7 +95,7 @@ export default {
         this.timer = null
         this.emphasized = false
         then()
-      }, 1000)
+      }, 500)
     }
   }
 }
@@ -129,7 +129,7 @@ export default {
 }
 
 .emphasized {
-  transform: scale(2, 2);
+  transform: scale(1.5, 1.5);
 }
 
 .button,

@@ -3,6 +3,7 @@
     <div class="toptop">
         <el-button @click="load">从文件读取角色</el-button>
         <el-button @click="save">保存角色到文件</el-button>
+        <el-button @click="noteVisible=true">记录</el-button>
     </div>
     <div class="top">
       <el-card class="basic">
@@ -29,29 +30,26 @@
           <el-card class="item"><variable name="魔法 MP" v-model="attributes.MP" :max="attributes.MaxMP"></variable></el-card>
         </div>
       </el-card>
-      <el-card class="skills">
-        <div slot="header">
-          <b>技能点数</b>
-          <el-button class="header-button" type="text">分配点数</el-button>
-        </div>
-        <div class="skills-multi">
-          <attribute v-for="(v,k) in skills" :key="k" class="item skill" :name="v.name" :value="v.value"></attribute>
-        </div>
-      </el-card>
+      <skills class="skills" :total="attributes.EDU==null?0:attributes.EDU*5" v-model="skills"></skills>
     </div>
+    <el-drawer :visible.sync="noteVisible" :title="'角色 '+attributes.name+' 的记录'" direction="rtl" size="300px">
+      <el-input class="note-input" type="textarea" resize="none" rows="16" v-model="note"></el-input>
+    </el-drawer>
   </div>
 </template>
 
 <script>
-import Editable from '../Editable'
 import Attributes from './Attributes'
+import Skills from './Skills'
+import Editable from '../Editable'
 import Attribute from '../Attribute'
 import Variable from '../Variable'
 
 export default {
   components: {
-    Editable,
     Attributes,
+    Skills,
+    Editable,
     Attribute,
     Variable
   },
@@ -66,19 +64,19 @@ export default {
         age: 30,
         place: '武汉',
         hometown: '石家庄',
-        STR: 100,
-        CON: 60,
-        SIZ: 20,
-        DEX: 100,
-        APP: 100,
-        INT: 100,
-        POW: 100,
-        EDU: 100,
-        MOV: 100,
+        STR: 50,
+        CON: 50,
+        SIZ: 50,
+        DEX: 50,
+        APP: 50,
+        INT: 50,
+        POW: 50,
+        EDU: 50,
+        MOV: 7,
         Luck: 35,
         Money: 35,
         HP: 10,
-        SAN: 10,
+        SAN: 99,
         MaxMP: 10,
         MP: 10
       },
@@ -86,24 +84,10 @@ export default {
         { name: '检疫', value: 100 },
         { name: '急救', value: 80 },
         { name: '聆听', value: 70 },
-        { name: '妙手', value: 60 },
-        { name: '妙手', value: 60 },
-        { name: '妙手', value: 60 },
-        { name: '妙手', value: 60 },
-        { name: '妙手', value: 60 },
-        { name: '妙手', value: 60 },
-        { name: '妙手', value: 60 },
-        { name: '妙手', value: 60 },
-        { name: '妙手', value: 60 },
-        { name: '妙手', value: 60 },
-        { name: '妙手', value: 60 },
-        { name: '妙手', value: 60 },
-        { name: '妙手', value: 60 },
-        { name: '妙手', value: 60 },
-        { name: '妙手', value: 60 },
-        { name: '妙手', value: 60 },
-        { name: '妙手', value: 60 },
-      ]
+        { name: '妙手', value: 60 }
+      ],
+      noteVisible: false,
+      note: ''
     }
   },
   methods: {
@@ -157,6 +141,9 @@ export default {
           }
           this.attributes = attributes
           this.skills = skills
+          if (obj.note != null) {
+            this.note = obj.note.toString()
+          }
         }
         reader.readAsText(e.target.files[0])
       }
@@ -165,7 +152,8 @@ export default {
     save() {
       let obj = {
         attributes: this.attributes,
-        skills: this.skills
+        skills: this.skills,
+        note: this.note
       }
       let blob = new Blob([JSON.stringify(obj)], { type: 'application/json' })
       let url = URL.createObjectURL(blob)
@@ -207,12 +195,6 @@ export default {
   margin-top: 10px;
 }
 
-.header-button {
-  float: right;
-  padding: 3px 0;
-  font-size: 16px;
-}
-
 .multi {
   display: flex;
   flex-wrap: wrap;
@@ -223,13 +205,7 @@ export default {
   margin-bottom: 10px;
 }
 
-.skills-multi {
-  display: flex;
-  flex-wrap: wrap;
-}
-
-.skill {
-  width: 250px;
-  padding-left: 8%;
+.note-input {
+  padding: 10px;
 }
 </style>
