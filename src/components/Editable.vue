@@ -1,21 +1,19 @@
 <template>
   <span v-if="editing">
-    <el-select v-if="options" class="input" v-model="input">
-      <el-option v-for="(v,k) in options" :key="k" :label="v.label" :value="v.value"></el-option>
-    </el-select>
-    <el-input v-else-if="number" class="input" v-model="input" type="number" :min="number.min" :max="number.max"></el-input>
-    <el-input v-else class="input" v-model="input"></el-input>
+    <el-input class="input" v-model="input"></el-input>
     <el-button v-if="canSave" icon="el-icon-check" circle @click="save"></el-button>
     <el-button v-if="canClose" icon="el-icon-close" circle @click="cancel"></el-button>
   </span>
   <span v-else>
-    {{display}} <el-button icon="el-icon-edit" circle @click="edit"></el-button>
+    {{value}} <el-button icon="el-icon-edit" circle @click="edit"></el-button>
   </span>
 </template>
 
 <script>
 export default {
-  props: ['value', 'options', 'number'],
+  props: {
+    value: String
+  },
   data() {
     return {
       editing: false,
@@ -28,20 +26,8 @@ export default {
     }
   },
   computed: {
-    display() {
-      if (this.options) {
-        for (let v of this.options) {
-          if (v.value == this.value) {
-            return v.label
-          }
-        }
-      }
-      return this.value
-    },
     canSave() {
-      return this.input != null &&
-        (this.input.length == null || this.input.length > 0) &&
-        (this.number == null || (this.number.min == null || this.input >= this.number.min) && (this.number.max == null || this.input <= this.number.max))
+      return this.input != null && (this.input.length == null || this.input.length > 0)
     },
     canClose() {
       return this.value != null
