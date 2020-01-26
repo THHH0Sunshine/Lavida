@@ -176,7 +176,7 @@ export default {
           return
         }
         char.attributes[key] = value
-        return value
+        return old
       }
       for (let skill of char.skills) {
         if (skill.name == key) {
