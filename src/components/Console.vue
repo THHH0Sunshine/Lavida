@@ -11,7 +11,12 @@
 </template>
 
 <script>
+import { mapMutations } from 'vuex'
+
 export default {
+  props: {
+    charList: Array
+  },
   data() {
     return {
       visible: false,
@@ -22,6 +27,7 @@ export default {
     }
   },
   methods: {
+    ...mapMutations(['setOneInfo', 'setAttribute', 'addSkill', 'deleteSkill', 'setSkillValue']),
     println(str) {
       this.text += str + '\n'
       this.$nextTick(() => this.$refs.text.scrollTop = this.$refs.text.scrollHeight)
@@ -105,7 +111,7 @@ export default {
           if (!isFinite(value)) {
             return this.println('非法数字 `' + args[3] + '`')
           }
-          char.skills.push({ name: args[2], value })
+          this.addSkill({ index: char.index, skill: { name: args[2], value } })
           this.println(args[1] + '.' + args[2] + ': ' + args[3])
           break
         case 'delskill':
@@ -117,11 +123,11 @@ export default {
             return this.println('找不到角色 `' + args[1] + '`')
           }
           old = []
-          for (let i = 0; i < char.skills.length; i++) {
-            let skill = char.skills[i]
+          for (let i = 0; i < char.char.skills.length; i++) {
+            let skill = char.char.skills[i]
             if (skill.name == args[2]) {
               old.push(skill)
-              char.skills.splice(i, 1)
+              this.deleteSkill({ index: char.index, skillIndex: i })
               i--
             }
           }
@@ -142,50 +148,51 @@ export default {
       }
     },
     findChar(name) {
-      for (let ch of this.$parent.charList) {
-        if (ch.info.name == name) {
-          return ch
+      for (let i = 0; i < this.charList.length; i++) {
+        if (this.charList[i].info.name == name) {
+          return { index: i, char: this.charList[i] }
         }
       }
     },
     getValue(char, key) {
-      let value = char.info[key]
+      let value = char.char.info[key]
       if (value !== undefined) {
         return value
       }
-      value = char.attributes[key]
+      value = char.char.attributes[key]
       if (value !== undefined) {
         return value
       }
-      for (let skill of char.skills) {
+      for (let skill of char.char.skills) {
         if (skill.name == key) {
           return skill.value
         }
       }
     },
     setValue(char, key, value) {
-      let old = char.info[key]
+      let old = char.char.info[key]
       if (old !== undefined) {
-        char.info[key] = value
+        this.setOneInfo({ index: char.index, name: key, value })
         return old
       }
-      old = char.attributes[key]
+      old = char.char.attributes[key]
       if (old !== undefined) {
         value = Number(value)
         if (!isFinite(value)) {
           return
         }
-        char.attributes[key] = value
+        this.setAttribute({ index: char.index, name: key, value })
         return old
       }
-      for (let skill of char.skills) {
+      for (let i = 0; i < char.char.skills.length; i++) {
+        let skill = char.char.skills[i]
         if (skill.name == key) {
           value = Number(value)
           if (!isFinite(value)) {
             return
           }
           old = skill.value
-          skill.value = value
+          this.setSkillValue({ index: char.index, skillIndex: i, value })
           return old
         }
       }

@@ -1,98 +1,78 @@
 <template>
   <div class="character">
     <div class="toptop">
-        <el-button @click="load">从文件读取角色</el-button>
-        <el-button @click="save">保存角色到文件</el-button>
-        <el-button @click="noteVisible=true">记录</el-button>
+      <el-button @click="del">删除角色</el-button>
+      <el-button @click="load">从文件读取角色</el-button>
+      <el-button @click="save">保存角色到文件</el-button>
+      <el-button @click="noteVisible=true">记录</el-button>
     </div>
     <div class="top">
-      <el-card class="basic">
-        <b slot="header">基本信息</b>
-        <div class="multi">
-          <span class="item">玩家：<editable v-model="info.player"></editable></span>
-          <span class="item">姓名：<editable v-model="info.name"></editable></span>
-          <span class="item">时代：<editable v-model="info.time"></editable></span>
-          <span class="item">职业：<editable v-model="info.profession"></editable></span>
-          <span class="item">性别：<editable v-model="info.gender"></editable></span>
-          <span class="item">年龄：<editable v-model="info.age"></editable></span>
-          <span class="item">住地：<editable v-model="info.place"></editable></span>
-          <span class="item">故乡：<editable v-model="info.hometown"></editable></span>
-        </div>
-      </el-card>
-      <attributes class="attributes" v-model="attributes"></attributes>
+      <info class="basic" :value="char.info" :index="index"></info>
+      <attributes class="attributes" :value="char.attributes" :index="index"></attributes>
     </div>
     <div class="center">
       <el-card class="variables">
         <b slot="header">基本变量</b>
         <div class="multi">
-          <el-card class="item"><variable name="体力 HP" v-model="attributes.HP"></variable></el-card>
-          <el-card class="item"><variable name="理智 SAN" v-model="attributes.SAN"></variable></el-card>
-          <el-card class="item"><variable name="魔法 MP" v-model="attributes.MP" :max="attributes.MaxMP"></variable></el-card>
+          <el-card class="item">
+            <variable name="体力 HP" :value="char.attributes.HP" @input="setAttribute({index,name:'HP',value:$event})"></variable>
+          </el-card>
+          <el-card class="item">
+            <variable name="理智 SAN" :value="char.attributes.SAN" @input="setAttribute({index,name:'SAN',value:$event})"></variable>
+          </el-card>
+          <el-card class="item">
+            <variable name="魔法 MP" :value="char.attributes.MP" :max="char.attributes.MaxMP" @input="setAttribute({index,name:'MP',value:$event})"></variable>
+          </el-card>
         </div>
       </el-card>
-      <skills class="skills" :total="attributes.EDU==null?0:attributes.EDU*5" v-model="skills"></skills>
+      <skills class="skills" :total="char.attributes.EDU==null?0:char.attributes.EDU*5" :value="char.skills" :index="index"></skills>
     </div>
-    <el-drawer :visible.sync="noteVisible" :title="'角色 '+info.name+' 的记录'" direction="rtl" size="300px">
-      <el-input class="note-input" type="textarea" resize="none" rows="16" v-model="note"></el-input>
+    <el-drawer :visible.sync="noteVisible" :title="'角色 '+char.info.name+' 的记录'" direction="rtl" size="300px">
+      <el-input class="note-input" type="textarea" resize="none" rows="16" :value="char.note" @input="setNote({index,note:$event})"></el-input>
     </el-drawer>
   </div>
 </template>
 
 <script>
+import Info from './Info'
 import Attributes from './Attributes'
 import Skills from './Skills'
 import Editable from '../Editable'
 import Attribute from '../Attribute'
 import Variable from '../Variable'
+import { mapMutations } from 'vuex'
 
 export default {
   components: {
+    Info,
     Attributes,
     Skills,
     Editable,
     Attribute,
     Variable
   },
+  props: {
+    char: Object,
+    index: Number
+  },
   data() {
     return {
-      info: {
-        player: 'Merlin',
-        name: '石块',
-        time: '瘟疫危机',
-        profession: '防疫专家',
-        gender: '女',
-        age: '25',
-        place: '武汉',
-        hometown: '石家庄'
-      },
-      attributes: {
-        STR: 50,
-        CON: 50,
-        SIZ: 50,
-        DEX: 50,
-        APP: 50,
-        INT: 50,
-        POW: 50,
-        EDU: 50,
-        MOV: 7,
-        Luck: 35,
-        Money: 35,
-        HP: 10,
-        SAN: 99,
-        MaxMP: 10,
-        MP: 10
-      },
-      skills: [
-        { name: '检疫', value: 100 },
-        { name: '急救', value: 80 },
-        { name: '聆听', value: 70 },
-        { name: '妙手', value: 60 }
-      ],
-      noteVisible: false,
-      note: ''
+      noteVisible: false
     }
   },
   methods: {
+    ...mapMutations(['setChar', 'setAttribute', 'setNote']),
+    del() {
+      let name = this.char.info.name
+      let tip = name == null ?
+        '是否删除该未命名角色？' :
+        '是否删除角色`' + name + '`？'
+      this.$confirm(tip, '提示', {
+        confirmButtonText: '确定',
+        cancelButtonText: '取消',
+        type: 'warning'
+      }).then(() => this.$emit('delete')).catch(() => {})
+    },
     load() {
       let input = document.createElement('input')
       input.type = 'file'
@@ -119,20 +99,22 @@ export default {
           if (obj.skills == null) {
             obj.skills = []
           }
-          for (let k of Object.keys(this.info)) {
+          let info = {}
+          for (let k of Object.keys(this.char.info)) {
             if (obj.info[k] == null) {
-              this.info[k] = null
+              info[k] = null
             } else {
               let value = obj.info[k].toString()
-              this.info[k] = value.length > 0 ? value : null
+              info[k] = value.length > 0 ? value : null
             }
           }
-          for (let k of Object.keys(this.attributes)) {
+          let attributes
+          for (let k of Object.keys(this.char.attributes)) {
             if (obj.attributes[k] == null) {
-              this.attributes[k] = null
+              attributes[k] = null
             } else {
               let value = Number(obj.attributes[k])
-              this.attributes[k] = isFinite(value) ? value : null
+              attributes[k] = isFinite(value) ? value : null
             }
           }
           let skills = []
@@ -159,10 +141,11 @@ export default {
               skills.push({ name: k, value })
             }
           }
-          this.skills = skills
-          if (obj.note != null) {
-            this.note = obj.note.toString()
-          }
+          let note = obj.note == null ? '' : obj.note.toString()
+          this.setChar({
+            index: this.index,
+            character: { info, attributes, skills, note }
+          })
         }
         reader.readAsText(e.target.files[0])
       }
@@ -170,16 +153,16 @@ export default {
     },
     save() {
       let obj = {
-        info: this.info,
-        attributes: this.attributes,
-        skills: this.skills,
-        note: this.note
+        info: this.char.info,
+        attributes: this.char.attributes,
+        skills: this.char.skills,
+        note: this.char.note
       }
       let blob = new Blob([JSON.stringify(obj)], { type: 'application/json' })
       let url = URL.createObjectURL(blob)
       let a = document.createElement('a')
       a.href = url
-      a.download = this.attributes.name + '.json'
+      a.download = this.char.attributes.name + '.json'
       a.click()
       URL.revokeObjectURL(url)
     }

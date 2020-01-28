@@ -13,7 +13,7 @@
           <div class="dialog-tags">
             <div class="dialog-attrtags">
               <span v-for="(v,k) in diceAttributes" :key="k" class="dialog-tag">
-                {{v.name}}：
+                {{v.label}} {{v.name}}：
                 <el-button @click="setAttr(k)">{{v.value==null?'???':v.value}}</el-button>
               </span>
               <span class="dialog-tag">移动 MOV：<b class="dialog-number">{{aMOV}}</b></span>
@@ -37,14 +37,9 @@
       </el-dialog>
     </div>
     <div class="multi">
-      <el-card class="item"><attribute name="力量 STR" :value="value.STR"></attribute></el-card>
-      <el-card class="item"><attribute name="体质 CON" :value="value.CON"></attribute></el-card>
-      <el-card class="item"><attribute name="体型 SIZ" :value="value.SIZ"></attribute></el-card>
-      <el-card class="item"><attribute name="敏捷 DEX" :value="value.DEX"></attribute></el-card>
-      <el-card class="item"><attribute name="外貌 APP" :value="value.APP"></attribute></el-card>
-      <el-card class="item"><attribute name="智力 INT" :value="value.INT"></attribute></el-card>
-      <el-card class="item"><attribute name="意志 POW" :value="value.POW"></attribute></el-card>
-      <el-card class="item"><attribute name="教育 EDU" :value="value.EDU"></attribute></el-card>
+      <el-card v-for="(v,k) in diceAttributes" :key="k" class="item">
+        <attribute :name="v.name+' '+v.label" :value="value[v.name]"></attribute>
+      </el-card>
       <el-card class="item"><variable name="移动 MOV" :value="value.MOV" constant></variable></el-card>
       <el-card class="item"><variable name="幸运 Luck" :value="value.Luck" constant></variable></el-card>
       <el-card class="item"><variable name="信用评级" :value="value.Money" constant></variable></el-card>
@@ -56,6 +51,7 @@
 import Dice from '../Dice'
 import Attribute from '../Attribute'
 import Variable from '../Variable'
+import { mapMutations } from 'vuex'
 
 export default {
   components: {
@@ -64,7 +60,8 @@ export default {
     Variable
   },
   props: {
-    value: Object
+    value: Object,
+    index: Number
   },
   data() {
     return {
@@ -75,14 +72,14 @@ export default {
       step: 1,
       total: 0,
       diceAttributes: [
-        { name: '力量 STR', value: null },
-        { name: '体质 CON', value: null },
-        { name: '体型 SIZ', value: null },
-        { name: '敏捷 DEX', value: null },
-        { name: '外貌 APP', value: null },
-        { name: '智力 INT', value: null },
-        { name: '意志 POW', value: null },
-        { name: '教育 EDU', value: null }
+        { name: 'STR', label: '力量', value: null },
+        { name: 'CON', label: '体质', value: null },
+        { name: 'SIZ', label: '体型', value: null },
+        { name: 'DEX', label: '敏捷', value: null },
+        { name: 'APP', label: '外貌', value: null },
+        { name: 'INT', label: '智力', value: null },
+        { name: 'POW', label: '意志', value: null },
+        { name: 'EDU', label: '教育', value: null }
       ],
       diceResults: [],
       selected: null,
@@ -123,6 +120,7 @@ export default {
     }
   },
   methods: {
+    ...mapMutations(['setAttribute', 'changeAttributes']),
     pushResult(tot) {
       let i = 0
       while (i < this.diceResults.length && this.diceResults[i] > tot) {
@@ -159,22 +157,18 @@ export default {
       }
     },
     save() {
-      this.$emit('input', {
-        ...this.value,
-        STR: this.diceAttributes[0].value,
-        CON: this.diceAttributes[1].value,
-        SIZ: this.diceAttributes[2].value,
-        DEX: this.diceAttributes[3].value,
-        APP: this.diceAttributes[4].value,
-        INT: this.diceAttributes[5].value,
-        POW: this.diceAttributes[6].value,
-        EDU: this.diceAttributes[7].value,
-        MOV: this.aMOV,
-        Luck: this.aLuck,
-        Money: this.aMoney,
-        HP: this.aHP,
-        SAN: 99,
-        MP: this.aMP
+      this.changeAttributes({
+        index: this.index,
+        changes: [
+          ...this.diceAttributes,
+          { name: 'MOV', value: this.aMOV },
+          { name: 'Luck', value: this.aLuck },
+          { name: 'Money', value: this.aMoney },
+          { name: 'HP', value: this.aHP },
+          { name: 'SAN', value: 99 },
+          { name: 'MaxMP', value: this.aMP },
+          { name: 'MP', value: this.aMP }
+        ]
       })
       this.dialog = false
       this.round = 1

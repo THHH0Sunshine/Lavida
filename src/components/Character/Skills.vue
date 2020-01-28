@@ -31,6 +31,7 @@
 
 <script>
 import Attribute from '../Attribute'
+import { mapMutations } from 'vuex'
 
 export default {
   components: {
@@ -38,7 +39,8 @@ export default {
   },
   props: {
     value: Array,
-    total: Number
+    total: Number,
+    index: Number
   },
   data() {
     return {
@@ -116,6 +118,7 @@ export default {
     }
   },
   methods: {
+    ...mapMutations(['setSkills']),
     assign(index, value) {
       let skill = this.skillList[index]
       if (value < 0 || skill.basic + value > 100) {
@@ -142,7 +145,7 @@ export default {
         e.add = 0
       }
       this.points = 0
-      this.$emit('input', list)
+      this.setSkills({ index: this.index, skills: list })
       this.dialog = false
     }
   }
