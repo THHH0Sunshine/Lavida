@@ -70,7 +70,7 @@ export default new Vuex.Store({
       state.characters.splice(index, 1)
     },
     setChar(state, payload) {
-      state.characters[payload.index] = payload.character
+      Vue.set(state.characters, payload.index, payload.character)
     },
     setOneInfo(state, payload) {
       state.characters[payload.index].info[payload.name] = payload.value

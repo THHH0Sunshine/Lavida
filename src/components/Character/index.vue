@@ -108,7 +108,7 @@ export default {
               info[k] = value.length > 0 ? value : null
             }
           }
-          let attributes
+          let attributes = {}
           for (let k of Object.keys(this.char.attributes)) {
             if (obj.attributes[k] == null) {
               attributes[k] = null
@@ -162,7 +162,7 @@ export default {
       let url = URL.createObjectURL(blob)
       let a = document.createElement('a')
       a.href = url
-      a.download = this.char.attributes.name + '.json'
+      a.download = this.char.info.name + '.json'
       a.click()
       URL.revokeObjectURL(url)
     }
